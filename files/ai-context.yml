@@ -1,0 +1,14 @@
+name: Update AI Context
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  update:
+    uses: bill/bill-shared-workflows/.github/workflows/update-ai-context.yml@main
+    with:
+      repo-name: {레포명}   # ← 레포마다 이 값만 변경
+    secrets:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      AI_CONTEXT_TOKEN: ${{ secrets.AI_CONTEXT_TOKEN }}
