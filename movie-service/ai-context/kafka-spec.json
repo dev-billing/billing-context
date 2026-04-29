@@ -1,0 +1,63 @@
+{
+  "service": "movie-service",
+  "brokerConfig": {
+    "bootstrapServers": "localhost:9092 (application.yml)",
+    "consumerGroup": "movie-reservation",
+    "ackMode": "MANUAL_IMMEDIATE",
+    "retryPolicy": "FixedBackOff(1000ms, 3회)",
+    "dlqPattern": "<original-topic>.dlq"
+  },
+  "produces": [
+    {
+      "topic": "reservation-created",
+      "trigger": "예약 생성 성공 시 (POST /api/reservations)",
+      "messageFormat": {
+        "reservationId": "long",
+        "amount": "int"
+      },
+      "producerClass": "EventPublisher",
+      "notes": "결제 서비스가 구독하여 결제 처리를 시작함"
+    },
+    {
+      "topic": "reservation-cancelled",
+      "trigger": "예약 취소 요청 시 (PATCH /api/reservations/{reservationId})",
+      "messageFormat": {
+        "reservationId": "long"
+      },
+      "producerClass": "EventPublisher",
+      "notes": "결제 서비스가 구독하여 환불 처리를 시작함"
+    }
+  ],
+  "consumes": [
+    {
+      "topic": "payment-completed",
+      "action": "예약 상태를 CONFIRMED로 변경",
+      "messageFormat": {
+        "reservationId": "long"
+      },
+      "consumerClass": "PaymentEventListener#handleCompletedPayment",
+      "groupId": "movie-reservation",
+      "notes": "결제 완료 이벤트. ReservationService.confirmed() 호출"
+    },
+    {
+      "topic": "payment-cancelled",
+      "action": "예약 상태를 CREATED_FAIL로 변경",
+      "messageFormat": {
+        "reservationId": "long"
+      },
+      "consumerClass": "PaymentEventListener#handleCancelledPayment",
+      "groupId": "movie-reservation",
+      "notes": "결제 취소 완료 이벤트. ReservationService.cancel() 호출"
+    },
+    {
+      "topic": "payment-created-fail",
+      "action": "예약 상태를 CREATED_FAIL로 변경",
+      "messageFormat": {
+        "reservationId": "long"
+      },
+      "consumerClass": "PaymentEventListener#handleCreatedPaymentFail",
+      "groupId": "movie-reservation",
+      "notes": "결제 생성 실패 이벤트. ReservationService.cancel() 호출 (PaymentCancelledEvent 재사용)"
+    }
+  ]
+}
