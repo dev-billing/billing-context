@@ -16,47 +16,10 @@ on:
 
 jobs:
   sync:
-    runs-on:
-      group: billing-dev
-
-    steps:
-      - name: Checkout billing-context
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.AI_CONTEXT_TOKEN }}
-          fetch-depth: 0
-
-      - name: Sync AI Context
-        id: sync
-        env:
-          GH_TOKEN: ${{ secrets.AI_CONTEXT_TOKEN }}
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          INPUT_REPO: ${{ inputs.repo-name }}
-          INPUT_FORCE: ${{ inputs.force }}
-        run: python3 scripts/sync_context.py
-
-      - name: Commit
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # 클론된 소스는 커밋 제외
-          grep -qxF '_source/' .gitignore 2>/dev/null || echo '_source/' >> .gitignore
-
-          git add repos.yml state/ .claude/ai-context/ .gitignore
-          python3 -c "
-          import yaml, subprocess
-          with open('repos.yml') as f:
-              config = yaml.safe_load(f)
-          for r in config['repos']:
-              subprocess.run(['git', 'add', f\"{r['name']}/ai-context/\"], check=False)
-          "
-
-          git diff --staged --quiet && echo "변경 없음 — 커밋 스킵" && exit 0
-
-          CHANGED=$(git diff --staged --name-only | grep '/ai-context/' | cut -d'/' -f1 | sort -u | tr '\n' ',' | sed 's/,$//')
-          git commit -m "chore: ai-context 자동 동기화 [skip ci]
-
-          업데이트된 레포: ${CHANGED:-root}
-          트리거: ${{ github.event_name }} / ${{ github.sha }}"
-          git push
+    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main
+    with:
+      repo-name: ${{ inputs.repo-name || '' }}
+      force: ${{ inputs.force || false }}
+    secrets:
+      AI_CONTEXT_TOKEN: ${{ secrets.AI_CONTEXT_TOKEN }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
