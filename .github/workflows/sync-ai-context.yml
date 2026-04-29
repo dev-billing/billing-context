@@ -16,8 +16,6 @@ on:
 
 jobs:
   sync:
-    permissions:
-      contents: write
     uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main
     with:
       repo-name: ${{ inputs.repo-name || '' }}
