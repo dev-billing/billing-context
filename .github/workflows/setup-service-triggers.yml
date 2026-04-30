@@ -45,10 +45,12 @@ jobs:
 
           for REPO in $REPOS; do
             echo "=== $REPO ==="
+            BRANCH=$(jq -r --arg name "$REPO" '.repos[] | select(.name==$name) | .branch' repos.json)
+            BRANCH=${BRANCH:-develop}
             CLONE_DIR="/tmp/trigger-setup-$REPO"
             rm -rf "$CLONE_DIR"
 
-            git clone --depth=1 \
+            git clone --depth=1 --branch="$BRANCH" \
               "https://x-access-token:${GH_TOKEN}@${SERVER}/${ORG}/${REPO}.git" \
               "$CLONE_DIR" || { echo "❌ $REPO 클론 실패"; continue; }
 
