@@ -41,7 +41,7 @@ jobs:
 
           OPEN='$'
           EXPR="${OPEN}{{ github.event.repository.name }}"
-          WORKFLOW=$(printf 'name: Sync AI Context\n\non:\n  push:\n    branches: [develop]\n\njobs:\n  sync:\n    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main\n    with:\n      repo-name: %s\n      context-repo: billing-context\n    secrets: inherit\n' "$EXPR")
+          WORKFLOW=$(printf 'name: Sync AI Context\n\non:\n  push:\n    branches: [develop]\n  workflow_dispatch:\n\njobs:\n  sync:\n    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main\n    with:\n      repo-name: %s\n      context-repo: billing-context\n    secrets: inherit\n' "$EXPR")
 
           for REPO in $REPOS; do
             echo "=== $REPO ==="
