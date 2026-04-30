@@ -32,6 +32,8 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           INPUT_REPO: ${{ inputs.repo-name }}
         run: |
+          export GH_HOST=$(echo "$GITHUB_SERVER_URL" | sed 's|https://||')
+
           ENCODED=$(python3 -c "import base64; r='$'+'{{ github.event.repository.name }}'; c='name: Sync AI Context\n\non:\n  push:\n    branches: [develop]\n\njobs:\n  sync:\n    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main\n    with:\n      repo-name: '+r+'\n    secrets: inherit\n'; print(base64.b64encode(c.encode()).decode(),end='')")
 
           ORG=$(jq -r '.org' repos.json)
