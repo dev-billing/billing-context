@@ -39,18 +39,9 @@ jobs:
             REPOS="$INPUT_REPO"
           fi
 
-          WORKFLOW_CONTENT="name: Sync AI Context
-
-on:
-  push:
-    branches: [develop]
-
-jobs:
-  sync:
-    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main
-    with:
-      repo-name: REPO_NAME_PLACEHOLDER
-    secrets: inherit"
+          OPEN='$'
+          EXPR="${OPEN}{{ github.event.repository.name }}"
+          WORKFLOW=$(printf 'name: Sync AI Context\n\non:\n  push:\n    branches: [develop]\n\njobs:\n  sync:\n    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main\n    with:\n      repo-name: %s\n    secrets: inherit\n' "$EXPR")
 
           for REPO in $REPOS; do
             echo "=== $REPO ==="
@@ -62,9 +53,7 @@ jobs:
               "$CLONE_DIR" || { echo "❌ $REPO 클론 실패"; continue; }
 
             mkdir -p "$CLONE_DIR/.github/workflows"
-            echo "$WORKFLOW_CONTENT" \
-              | sed "s|REPO_NAME_PLACEHOLDER|\${{ github.event.repository.name }}|" \
-              > "$CLONE_DIR/.github/workflows/sync-ai-context.yml"
+            echo "$WORKFLOW" > "$CLONE_DIR/.github/workflows/sync-ai-context.yml"
 
             git -C "$CLONE_DIR" config user.name "github-actions[bot]"
             git -C "$CLONE_DIR" config user.email "github-actions[bot]@users.noreply.github.com"
