@@ -32,33 +32,51 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           INPUT_REPO: ${{ inputs.repo-name }}
         run: |
-          export GH_HOST=$(echo "$GITHUB_SERVER_URL" | sed 's|https://||')
-
-          ENCODED=$(python3 -c "import base64; r='$'+'{{ github.event.repository.name }}'; c='name: Sync AI Context\n\non:\n  push:\n    branches: [develop]\n\njobs:\n  sync:\n    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main\n    with:\n      repo-name: '+r+'\n    secrets: inherit\n'; print(base64.b64encode(c.encode()).decode(),end='')")
-
+          SERVER=$(echo "$GITHUB_SERVER_URL" | sed 's|https://||')
           ORG=$(jq -r '.org' repos.json)
           REPOS=$(jq -r '.repos[].name' repos.json)
           if [ -n "$INPUT_REPO" ]; then
             REPOS="$INPUT_REPO"
           fi
 
+          WORKFLOW_CONTENT="name: Sync AI Context
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  sync:
+    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main
+    with:
+      repo-name: REPO_NAME_PLACEHOLDER
+    secrets: inherit"
+
           for REPO in $REPOS; do
             echo "=== $REPO ==="
-            SHA=$(gh api repos/$ORG/$REPO/contents/.github/workflows/sync-ai-context.yml \
-              --jq '.sha' 2>/dev/null || echo "")
+            CLONE_DIR="/tmp/trigger-setup-$REPO"
+            rm -rf "$CLONE_DIR"
 
-            if [ -n "$SHA" ]; then
-              gh api repos/$ORG/$REPO/contents/.github/workflows/sync-ai-context.yml \
-                --method PUT \
-                --field message="chore: ai-context 자동 동기화 트리거 추가" \
-                --field content="$ENCODED" \
-                --field sha="$SHA" \
-                --jq '.commit.sha' && echo "✅ $REPO 업데이트 완료" || echo "❌ $REPO 실패"
+            git clone --depth=1 \
+              "https://x-access-token:${GH_TOKEN}@${SERVER}/${ORG}/${REPO}.git" \
+              "$CLONE_DIR" || { echo "❌ $REPO 클론 실패"; continue; }
+
+            mkdir -p "$CLONE_DIR/.github/workflows"
+            echo "$WORKFLOW_CONTENT" \
+              | sed "s|REPO_NAME_PLACEHOLDER|\${{ github.event.repository.name }}|" \
+              > "$CLONE_DIR/.github/workflows/sync-ai-context.yml"
+
+            git -C "$CLONE_DIR" config user.name "github-actions[bot]"
+            git -C "$CLONE_DIR" config user.email "github-actions[bot]@users.noreply.github.com"
+            git -C "$CLONE_DIR" add .github/workflows/sync-ai-context.yml
+
+            if git -C "$CLONE_DIR" diff --staged --quiet; then
+              echo "↩️  $REPO 변경 없음 — 스킵"
             else
-              gh api repos/$ORG/$REPO/contents/.github/workflows/sync-ai-context.yml \
-                --method PUT \
-                --field message="chore: ai-context 자동 동기화 트리거 추가" \
-                --field content="$ENCODED" \
-                --jq '.commit.sha' && echo "✅ $REPO 추가 완료" || echo "❌ $REPO 실패"
+              git -C "$CLONE_DIR" commit -m "chore: ai-context 자동 동기화 트리거 추가" \
+                && git -C "$CLONE_DIR" push \
+                && echo "✅ $REPO 완료" || echo "❌ $REPO push 실패"
             fi
+
+            rm -rf "$CLONE_DIR"
           done
