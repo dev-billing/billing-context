@@ -32,23 +32,27 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           INPUT_REPO: ${{ inputs.repo-name }}
         run: |
-          OPEN='${{'
-          WORKFLOW_CONTENT="name: Sync AI Context
+          ENCODED=$(python3 -c "
+import base64
+repo_expr = '$' + '{{ github.event.repository.name }}'
+content = (
+  'name: Sync AI Context\n'
+  '\n'
+  'on:\n'
+  '  push:\n'
+  '    branches: [develop]\n'
+  '\n'
+  'jobs:\n'
+  '  sync:\n'
+  '    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main\n'
+  '    with:\n'
+  '      repo-name: ' + repo_expr + '\n'
+  '    secrets: inherit\n'
+)
+print(base64.b64encode(content.encode()).decode(), end='')
+")
 
-on:
-  push:
-    branches: [develop]
-
-jobs:
-  sync:
-    uses: dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main
-    with:
-      repo-name: ${OPEN} github.event.repository.name }}
-    secrets: inherit"
-
-          ENCODED=$(echo "$WORKFLOW_CONTENT" | base64 -w 0)
           ORG=$(jq -r '.org' repos.json)
-
           REPOS=$(jq -r '.repos[].name' repos.json)
           if [ -n "$INPUT_REPO" ]; then
             REPOS="$INPUT_REPO"
