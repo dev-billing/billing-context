@@ -25,6 +25,15 @@
 - PR close (미merge) → `reusable-generate-pr-drafts.yml` (mode: delete_draft) 호출하여 초안 삭제
 - 대상 브랜치: `master`, `develop`
 
+### AI Context 동기화 (GitHub Actions)
+- 워크플로우: `.github/workflows/sync-ai-context.yml`
+- 스케줄: 매 시간 자동 실행 (`0 * * * *`)
+- 수동 트리거(workflow_dispatch) 지원:
+  - `repo-name`: 특정 레포만 업데이트 (빈값이면 변경된 전체 레포)
+  - `force`: 변경 여부 무시하고 강제 전체 재생성 (boolean)
+- 실행 위임: `dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main` 호출
+- `secrets: inherit`로 시크릿 전달
+
 ### Dooray Wiki
 - 용도: REST API 문서 자동 발행
 - API 문서 레지스트리: `.shared-config/rest-api-docs/todo-service/api-docs-registry.json`
