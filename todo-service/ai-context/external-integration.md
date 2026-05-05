@@ -24,6 +24,7 @@
 - PR merge → `reusable-generate-pr-drafts.yml` (mode: all) 호출하여 최종 코드 기준 초안 최신화 + 발행 + deprecated 처리
 - PR close (미merge) → `reusable-generate-pr-drafts.yml` (mode: delete_draft) 호출하여 초안 삭제
 - 대상 브랜치: `master`, `develop`
+- 수동 초안 생성: `api-doc-create-draft.yml` (workflow_dispatch) — `api_key`(예: `GET /api/v1/todos`)와 `branch`(기본값: `master`) 지정 → `reusable-create-draft-from-code.yml@main` 호출하여 특정 코드 기준 초안 생성
 
 ### AI Context 동기화 (GitHub Actions)
 - 워크플로우: `.github/workflows/sync-ai-context.yml`
