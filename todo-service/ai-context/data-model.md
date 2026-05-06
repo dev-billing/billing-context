@@ -30,7 +30,7 @@
 | content | content | TEXT | NULLABLE | 상세 내용 |
 | status | status | VARCHAR | NOT NULL, DEFAULT 'TODO' | 진행 상태 (Enum 문자열 저장) |
 | dueDate | due_date | DATE | NULLABLE | 마감일 |
-| priority | priority | INT | NULLABLE | 우선순위 (숫자, 의미는 애플리케이션 정의) |
+| priority | priority | INT | NULLABLE | 우선순위 (1~5 권장, 숫자가 높을수록 중요) |
 | createdAt | created_at | DATETIME | 자동 생성 | 생성 시각 (`@CreationTimestamp`) |
 | updatedAt | updated_at | DATETIME | 자동 갱신 | 수정 시각 (`@UpdateTimestamp`) |
 
@@ -53,10 +53,10 @@
 
 | 필드 | 타입 | 필수 | 설명 |
 |------|------|------|------|
-| title | String | 사실상 필수 (엔티티 NOT NULL) | 제목 |
+| title | String | 사실상 필수 (엔티티 NOT NULL) | 제목 (최대 100자) |
 | content | String | 선택 | 내용 |
-| dueDate | LocalDate | 선택 | 마감일 |
-| priority | Integer | 선택 | 우선순위 |
+| dueDate | LocalDate | 선택 | 마감일 (yyyy-MM-dd) |
+| priority | Integer | 선택 | 우선순위 (1~5 권장, 숫자가 높을수록 중요) |
 | tags | List\<String\> | 선택 | 태그 목록 (현재 미사용) |
 
 ### TodoUpdateRequest
@@ -67,7 +67,7 @@
 | content | String | 내용 |
 | status | TodoStatus | 상태 |
 | dueDate | LocalDate | 마감일 |
-| priority | Integer | 우선순위 |
+| priority | Integer | 우선순위 (1~5 권장) |
 
 ### TodoResponse
 
@@ -78,6 +78,6 @@
 | content | String | 내용 |
 | status | TodoStatus | 상태 |
 | dueDate | LocalDate | 마감일 |
-| priority | Integer | 우선순위 |
+| priority | Integer | 우선순위 (1~5) |
 | createdAt | LocalDateTime | 생성 시각 |
 | updatedAt | LocalDateTime | 수정 시각 |

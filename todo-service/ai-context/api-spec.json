@@ -18,10 +18,10 @@
         "type": "object",
         "required": ["title"],
         "properties": {
-          "title":    { "type": "string" },
+          "title":    { "type": "string", "maxLength": 100 },
           "content":  { "type": "string" },
           "dueDate":  { "type": "string", "format": "date" },
-          "priority": { "type": "integer" },
+          "priority": { "type": "integer", "minimum": 1, "maximum": 5, "description": "1~5 권장, 숫자가 높을수록 중요" },
           "tags":     { "type": "array", "items": { "type": "string" }, "description": "현재 미사용" }
         }
       },
@@ -32,7 +32,7 @@
           "content":  { "type": "string" },
           "status":   { "$ref": "#/components/schemas/TodoStatus" },
           "dueDate":  { "type": "string", "format": "date" },
-          "priority": { "type": "integer" }
+          "priority": { "type": "integer", "minimum": 1, "maximum": 5, "description": "1~5 권장" }
         }
       },
       "TodoResponse": {
@@ -43,7 +43,7 @@
           "content":   { "type": "string" },
           "status":    { "$ref": "#/components/schemas/TodoStatus" },
           "dueDate":   { "type": "string", "format": "date" },
-          "priority":  { "type": "integer" },
+          "priority":  { "type": "integer", "minimum": 1, "maximum": 5, "description": "1~5" },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }
@@ -217,7 +217,7 @@
         "description": "status 및 minPriority 필터를 조합하여 total/done/pending 카운트 반환 (메모리 집계).",
         "parameters": [
           { "name": "status", "in": "query", "required": false, "schema": { "$ref": "#/components/schemas/TodoStatus" }, "description": "필터링할 상태" },
-          { "name": "minPriority", "in": "query", "required": false, "schema": { "type": "integer" }, "description": "최소 우선순위 (이상)" }
+          { "name": "minPriority", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 5 }, "description": "최소 우선순위 (이상)" }
         ],
         "responses": {
           "200": { "description": "성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StatisticsResponse" } } } }
