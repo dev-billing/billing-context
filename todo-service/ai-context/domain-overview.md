@@ -55,6 +55,6 @@ com.example.review
 1. **Todo 상태 흐름**: `TODO` → `IN_PROGRESS` → `DONE` (강제 순서 없음, 자유 전환)
 2. **부분 업데이트**: `PATCH /external/api/todo-list/{id}?fields=title,status` 형태로 특정 필드만 업데이트 가능. `fields` 미지정 시 전체 업데이트
 3. **null-safe 업데이트**: `Todo.update()`는 null 값을 무시하므로 요청에 없는 필드는 변경되지 않음
-4. **통계 집계**: `total`, `done`, `pending(= total - done)` 카운트를 `status`, `minPriority` 필터 조합으로 계산 (DB가 아닌 메모리 내 집계). `includeDueToday=true` 전달 시 오늘 마감 항목 수(`dueToday`)를 추가로 반환
+4. **통계 집계**: `total`, `done`, `pending(= total - done)` 카운트를 `status`, `minPriority` 필터 조합으로 계산 (DB가 아닌 메모리 내 집계)
 5. **존재하지 않는 Todo 접근**: `IllegalArgumentException` → GlobalExceptionHandler가 HTTP 404로 변환
 6. **스키마 관리**: `ddl-auto: update` — 엔티티 변경 시 자동 DDL 반영 (프로덕션 배포 시 주의 필요)
