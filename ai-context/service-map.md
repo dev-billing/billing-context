@@ -9,7 +9,7 @@
 | 서비스명 | 한 줄 역할 | 기술 스택 | ai-context 경로 |
 |----------|-----------|-----------|----------------|
 | movie-service | 영화·상영관·좌석 관리 및 예약 처리 | Java 17, Spring Boot 3.5.9, MySQL, Redis, Kafka | `./movie-service/ai-context/` |
-| todo-service | Todo 항목 CRUD REST API | Java 21, Spring Boot 4.0.3, MySQL | `./todo-service/ai-context/` |
+| todo-service | Todo 항목 CRUD REST API (공개/내부/외부 3그룹) | Java 21, Spring Boot 4.0.3, MySQL | `./todo-service/ai-context/` |
 | payment-service | 결제 처리 ⚠️ ai-context 미생성 | 미확인 | `./payment-service/ai-context/` |
 | user-service | 사용자 관리 ⚠️ ai-context 미생성 | 미확인 | `./user-service/ai-context/` |
 
@@ -29,7 +29,16 @@
 
 | 서비스명 | DB | 메시지 브로커 | 캐시/인프라 |
 |----------|-----|--------------|-----------|
-| movie-service | MySQL | Kafka | Redis (Spring Cache + Redisson 분산 락) |
-| todo-service | MySQL | - | - |
+| movie-service | MySQL 8.x | Kafka | Redis (Spring Cache + Redisson 분산 락) |
+| todo-service | MySQL 8.x | - | - |
 | payment-service | 미확인 | Kafka (추정) | 미확인 |
 | user-service | 미확인 | 미확인 | 미확인 |
+
+## API 엔드포인트 요약
+
+| 서비스명 | 엔드포인트 수 | 주요 경로 |
+|----------|------------|----------|
+| movie-service | 2개 | `POST /api/reservations`, `PATCH /api/reservations/{id}` |
+| todo-service | 12개 | `/api/todo-list`, `/internal/api/todo-list`, `/external/api/todo-list` |
+| payment-service | 미확인 | - |
+| user-service | 미확인 | - |

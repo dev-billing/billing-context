@@ -36,17 +36,23 @@ Master Agent는 업무 요청을 받으면 이 가이드를 먼저 읽고,
 
 ### Todo 기능 변경
 - todo-service는 standalone — 타 서비스 영향 없음
-- 세 컨트롤러(TodoController, ExternalTodoController, InternalTodoController)가 동일 서비스를 공유하므로 수정 시 세 경로 모두 확인
-- `dueDate` 필드: `TodoCreateRequest`에만 존재, 엔티티에 없어 저장 안 됨 (알려진 버그)
+- 세 컨트롤러(TodoController, InternalTodoController, ExternalTodoController)가 동일 서비스를 공유하므로
+  수정 시 세 경로(Public/Internal/External) 모두 영향 확인
+- `ExternalTodoController`의 PATCH는 `fields` 쿼리 파라미터로 부분 업데이트 지원 — 다른 컨트롤러와 다름
 
 ### 신규 기능 추가
 - 새 API 엔드포인트 추가 → 해당 서비스의 `api-spec.json` 업데이트
 - 새 Kafka 이벤트 추가 → `interface-contracts.json` 업데이트
-- DLQ 패턴: `<original-topic>.dlq` (movie-service 기준)
+- DLQ 패턴: `<original-topic>.dlq` (movie-service 기준, ErrorHandler: `IllegalArgumentException`, `NullPointerException` → 재시도 없이 DLQ)
 
 ### 데이터 모델 변경
-- `Reservation.userId` 변경 → user-service와 직접 연동 없음. 외래 참조 의미 변경만 확인
+- `Reservation.userId` 변경 → user-service와 직접 HTTP 연동 없음. 외래 참조 의미 변경만 확인
 - Movie/Screen/Theater 스키마 변경 → movie-service 단독 영향
+- movie-service ddl-auto: `create` 주의 — 로컬 외 환경에서는 반드시 변경 필요
+
+### 인프라/공통 변경
+- Redis 설정 변경 → movie-service의 Spring Cache + Redisson 분산 락 양쪽 영향 확인
+- Kafka broker 변경 → movie-service ↔ payment-service 이벤트 전체 영향
 
 ## 서비스별 진입 파일 경로
 
@@ -54,6 +60,6 @@ Master Agent는 업무 요청을 받으면 이 가이드를 먼저 읽고,
 |----------|---------------------------|
 | 영화·예약·상영관 | `movie-service/ai-context/domain-overview.md` → `api-spec.json` → `kafka-spec.json` → `data-model.md` |
 | 결제·환불 | `interface-contracts.json` → `payment-service/ai-context/` (미생성, 생성 필요) |
-| Todo | `todo-service/ai-context/domain-overview.md` → `api-spec.json` |
+| Todo | `todo-service/ai-context/domain-overview.md` → `api-spec.json` → `data-model.md` |
 | 사용자 | `user-service/ai-context/` (미생성, 생성 필요) |
 | 서비스 간 이벤트 | `interface-contracts.json` → `dependency-graph.md` |

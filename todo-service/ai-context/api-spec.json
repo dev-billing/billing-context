@@ -51,9 +51,10 @@
       "StatisticsResponse": {
         "type": "object",
         "properties": {
-          "total":   { "type": "integer", "format": "int64" },
-          "done":    { "type": "integer", "format": "int64" },
-          "pending": { "type": "integer", "format": "int64" }
+          "total":    { "type": "integer", "format": "int64" },
+          "done":     { "type": "integer", "format": "int64" },
+          "pending":  { "type": "integer", "format": "int64" },
+          "dueToday": { "type": "integer", "format": "int64", "description": "includeDueToday=true 전달 시에만 포함. 오늘 마감 항목 수." }
         }
       },
       "ErrorResponse": {
@@ -214,10 +215,11 @@
       "get": {
         "tags": ["External API"],
         "summary": "Todo 통계 조회",
-        "description": "status 및 minPriority 필터를 조합하여 total/done/pending 카운트 반환 (메모리 집계)",
+        "description": "status 및 minPriority 필터를 조합하여 total/done/pending 카운트 반환 (메모리 집계). includeDueToday=true 전달 시 오늘 마감 항목 수(dueToday) 추가 포함.",
         "parameters": [
           { "name": "status", "in": "query", "required": false, "schema": { "$ref": "#/components/schemas/TodoStatus" }, "description": "필터링할 상태" },
-          { "name": "minPriority", "in": "query", "required": false, "schema": { "type": "integer" }, "description": "최소 우선순위 (이상)" }
+          { "name": "minPriority", "in": "query", "required": false, "schema": { "type": "integer" }, "description": "최소 우선순위 (이상)" },
+          { "name": "includeDueToday", "in": "query", "required": false, "schema": { "type": "boolean", "default": false }, "description": "true 전달 시 응답에 dueToday 필드 포함" }
         ],
         "responses": {
           "200": { "description": "성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StatisticsResponse" } } } }

@@ -1,13 +1,14 @@
 {
   "system": "multi-service-root",
-  "generatedAt": "2026-04-30",
-  "note": "payment-service, user-service의 ai-context가 없어 해당 서비스 측 스펙은 movie-service kafka-spec.json 기준으로 추론됨",
+  "generatedAt": "2026-05-06",
+  "note": "payment-service, user-service의 ai-context가 없어 해당 서비스 측 스펙은 movie-service kafka-spec.json 기준으로 역추론됨",
   "restContracts": [],
   "eventContracts": [
     {
       "topic": "reservation-created",
       "producer": "movie-service",
       "producerClass": "EventPublisher",
+      "trigger": "POST /api/reservations 성공 시",
       "consumers": ["payment-service"],
       "consumerClass": "미확인 (payment-service ai-context 없음)",
       "messageFields": {
@@ -15,19 +16,20 @@
         "amount": "int"
       },
       "purpose": "예약 생성 완료 → 결제 처리 시작",
-      "warning": "payment-service ai-context 미생성 — consumer 상세 미확인"
+      "warning": "payment-service ai-context 미생성 — consumer 클래스·그룹 미확인"
     },
     {
       "topic": "reservation-cancelled",
       "producer": "movie-service",
       "producerClass": "EventPublisher",
+      "trigger": "PATCH /api/reservations/{reservationId} 호출 시 (상태 CANCELLING 전환 후)",
       "consumers": ["payment-service"],
       "consumerClass": "미확인 (payment-service ai-context 없음)",
       "messageFields": {
         "reservationId": "long"
       },
       "purpose": "예약 취소 요청 → 환불 처리 시작",
-      "warning": "payment-service ai-context 미생성 — consumer 상세 미확인"
+      "warning": "payment-service ai-context 미생성 — consumer 클래스·그룹 미확인"
     },
     {
       "topic": "payment-completed",
@@ -35,10 +37,11 @@
       "producerClass": "미확인 (payment-service ai-context 없음)",
       "consumers": ["movie-service"],
       "consumerClass": "PaymentEventListener#handleCompletedPayment",
+      "consumerGroup": "movie-reservation",
       "messageFields": {
         "reservationId": "long"
       },
-      "purpose": "결제 완료 → 예약 상태 CONFIRMED 변경",
+      "purpose": "결제 완료 → 예약 상태 PENDING → CONFIRMED 변경",
       "warning": "payment-service ai-context 미생성 — producer 스펙 미확인. movie-service kafka-spec.json 기준으로 기록"
     },
     {
@@ -47,10 +50,11 @@
       "producerClass": "미확인 (payment-service ai-context 없음)",
       "consumers": ["movie-service"],
       "consumerClass": "PaymentEventListener#handleCancelledPayment",
+      "consumerGroup": "movie-reservation",
       "messageFields": {
         "reservationId": "long"
       },
-      "purpose": "결제 취소 완료 → 예약 상태 CANCELLED 변경",
+      "purpose": "결제 취소 완료 → 예약 상태 CANCELLING → CANCELLED 변경",
       "warning": "payment-service ai-context 미생성 — producer 스펙 미확인. movie-service kafka-spec.json 기준으로 기록"
     },
     {
@@ -59,10 +63,11 @@
       "producerClass": "미확인 (payment-service ai-context 없음)",
       "consumers": ["movie-service"],
       "consumerClass": "PaymentEventListener#handleCreatedPaymentFail",
+      "consumerGroup": "movie-reservation",
       "messageFields": {
         "reservationId": "long"
       },
-      "purpose": "결제 생성 실패 → 예약 상태 CREATED_FAIL 변경",
+      "purpose": "결제 생성 실패 → 예약 상태 PENDING → CREATED_FAIL 변경",
       "warning": "payment-service ai-context 미생성 — producer 스펙 미확인. movie-service kafka-spec.json 기준으로 기록"
     }
   ]
