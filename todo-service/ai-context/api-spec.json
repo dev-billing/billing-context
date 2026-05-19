@@ -183,8 +183,8 @@
       },
       "patch": {
         "tags": ["External API"],
-        "summary": "Todo 부분 수정",
-        "description": "`fields` 쿼리 파라미터로 업데이트할 필드를 지정. 미지정 시 전체 업데이트.",
+        "summary": "Todo 수정",
+        "description": "`fields` 쿼리 파라미터로 수정할 필드를 한정할 수 있으며, 미입력 시 전체 필드를 덮어씁니다.",
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } },
           { "name": "fields", "in": "query", "required": false, "schema": { "type": "array", "items": { "type": "string", "enum": ["title", "content", "status", "dueDate", "priority"] } }, "description": "업데이트할 필드 목록" }
