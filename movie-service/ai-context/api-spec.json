@@ -5,7 +5,8 @@
     {
       "method": "POST",
       "path": "/api/reservations",
-      "summary": "예약 생성",
+      "summary": "영화 예매 생성",
+      "scope": "external",
       "auth": "없음 (미설정)",
       "requestParams": [],
       "requestBody": {
@@ -26,12 +27,13 @@
           "reservationSeatIds": "List<Long>"
         }
       },
-      "notes": "좌석별 분산 락(Redisson MultiLock) 적용. 동일 상영(screenId)+좌석(theaterSeatId) 조합에 대해 PENDING/CONFIRMED 상태 예약이 있으면 중복 예약 방지. 예약 생성 후 reservation-created Kafka 이벤트 발행"
+      "notes": "좌석별 분산 락(Redisson MultiLock) 적용. 동일 상영(screenId)+좌석(theaterSeatId) 조합에 대해 PENDING/CONFIRMED 상태 예약이 있으면 중복 예약 방지 및 충돌 오류 반환. 예약 생성 후 reservation-created Kafka 이벤트 발행"
     },
     {
       "method": "PATCH",
       "path": "/api/reservations/{reservationId}",
-      "summary": "예약 취소 요청",
+      "summary": "영화 예매 취소",
+      "scope": "external",
       "auth": "없음 (미설정)",
       "requestParams": [
         {
@@ -39,14 +41,14 @@
           "in": "path",
           "type": "long",
           "required": true,
-          "description": "취소할 예약 ID"
+          "description": "취소할 예매 ID"
         }
       ],
       "requestBody": null,
       "responseBody": {
         "type": "ApiResponse<Void>"
       },
-      "notes": "상태를 CANCELLING으로 변경 후 reservation-cancelled Kafka 이벤트 발행. 실제 취소 확정(CANCELLED 전환)은 payment-cancelled 이벤트 수신 시 처리"
+      "notes": "상태를 CANCELLING으로 변경 후 reservation-cancelled Kafka 이벤트 발행. 실제 취소 확정(CANCELLED 전환)은 payment-cancelled 이벤트 수신 시 처리. 이미 취소된 예매에 대한 재요청은 멱등하게 처리됨"
     }
   ]
 }

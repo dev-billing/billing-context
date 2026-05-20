@@ -71,13 +71,14 @@ com.movieservice
 ```
 
 ## 핵심 비즈니스 규칙
-- 예약 생성 시 동일 screenId + theaterSeatId 조합에 PENDING 또는 CONFIRMED 상태 예약이 있으면 중복 예약 불가
+- 예약 생성 시 동일 screenId + theaterSeatId 조합에 PENDING 또는 CONFIRMED 상태 예약이 있으면 중복 예약 불가 (충돌 오류 반환)
 - 분산 락을 사용해 동시 예약 요청으로 인한 경쟁 조건 방지 (락 키: `lock:screenId:{id}:seatId:{id}`)
 - 예약 상태 전환 규칙:
   - PENDING → CONFIRMED: 결제 완료(payment-completed 이벤트) 수신 시만 가능
   - PENDING/CONFIRMED → CANCELLING: 취소 요청 API 호출 시
   - CANCELLING → CANCELLED: 결제 취소 완료(payment-cancelled 이벤트) 수신 시
   - PENDING → CREATED_FAIL: 결제 생성 실패(payment-created-fail 이벤트) 수신 시
+- 이미 취소된 예매에 대한 재요청은 멱등하게 처리됨 (중복 취소 요청 안전)
 - Money 값 객체: 0 미만이면 IllegalArgumentException 발생
 
 ## 주의사항
