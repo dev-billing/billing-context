@@ -1,8 +1,9 @@
 name: Sync AI Context
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # 매 시간 실행
+  # 자동 트리거 비활성화 — 필요 시 workflow_dispatch 로 수동 실행
+  # schedule:
+  #   - cron: '0 * * * *'  # 매 시간 실행
   workflow_dispatch:
     inputs:
       repo-name:
