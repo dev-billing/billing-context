@@ -39,10 +39,12 @@ com.example.review
 ├── repository/
 │   └── TodoRepository.java         # JpaRepository 확장
 ├── entity/
-│   └── Todo.java                   # 핵심 엔티티 + TodoStatus Enum
+│   ├── Todo.java                   # 핵심 엔티티 + TodoStatus Enum
+│   └── TodoCategory.java           # 카테고리 Enum (PERSONAL/WORK/STUDY/OTHER)
 ├── dto/
 │   ├── request/
 │   │   ├── TodoCreateRequest.java
+│   │   ├── TodoCategorizedCreateRequest.java
 │   │   └── TodoUpdateRequest.java
 │   └── response/
 │       └── TodoResponse.java
@@ -58,3 +60,4 @@ com.example.review
 4. **통계 집계**: `total`, `done`, `pending(= total - done)` 카운트를 `status`, `minPriority` 필터 조합으로 계산 (DB가 아닌 메모리 내 집계)
 5. **존재하지 않는 Todo 접근**: `IllegalArgumentException` → GlobalExceptionHandler가 HTTP 404로 변환
 6. **스키마 관리**: `ddl-auto: update` — 엔티티 변경 시 자동 DDL 반영 (프로덕션 배포 시 주의 필요)
+7. **카테고리 분류**: `POST /external/api/todo-list/categorized`로 생성 시 `TodoCategory`(PERSONAL/WORK/STUDY/OTHER) 지정 가능. 현재 category 필드는 요청 수신 후 service 레이어에서 미활용(향후 확장 예정)

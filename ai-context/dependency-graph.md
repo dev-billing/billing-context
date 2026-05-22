@@ -37,6 +37,20 @@ todo-service   : Kafka 연동 없음 (standalone)
 user-service   : 미확인 (ai-context 없음)
 ```
 
+## Kafka 토픽 목록
+
+| 토픽명 | 프로듀서 | 컨슈머 | 컨슈머 그룹 | 목적 |
+|--------|---------|--------|-----------|------|
+| reservation-created | movie-service | payment-service | 미확인 | 예약 생성 → 결제 처리 시작 |
+| reservation-cancelled | movie-service | payment-service | 미확인 | 예약 취소 → 환불 처리 시작 |
+| payment-completed | payment-service | movie-service | movie-reservation | 결제 완료 → 예약 CONFIRMED |
+| payment-cancelled | payment-service | movie-service | movie-reservation | 결제 취소 → 예약 CANCELLED |
+| payment-created-fail | payment-service | movie-service | movie-reservation | 결제 생성 실패 → 예약 CREATED_FAIL |
+
+> DLQ 패턴: `<original-topic>.dlq` (movie-service 기준)
+> 재시도 정책: FixedBackOff(1000ms, 3회)
+> `IllegalArgumentException`, `NullPointerException`은 재시도 없이 DLQ로 전송
+
 ## 서비스 간 영향 매트릭스
 
 변경 시 영향을 주는 방향 (행 → 열 방향).

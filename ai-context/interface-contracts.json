@@ -1,6 +1,6 @@
 {
   "system": "multi-service-root",
-  "generatedAt": "2026-05-06",
+  "generatedAt": "2026-05-22",
   "note": "payment-service, user-service의 ai-context가 없어 해당 서비스 측 스펙은 movie-service kafka-spec.json 기준으로 역추론됨",
   "restContracts": [],
   "eventContracts": [

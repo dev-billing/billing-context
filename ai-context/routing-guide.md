@@ -39,6 +39,7 @@ Master Agent는 업무 요청을 받으면 이 가이드를 먼저 읽고,
 - 세 컨트롤러(TodoController, InternalTodoController, ExternalTodoController)가 동일 서비스를 공유하므로
   수정 시 세 경로(Public/Internal/External) 모두 영향 확인
 - `ExternalTodoController`의 PATCH는 `fields` 쿼리 파라미터로 부분 업데이트 지원 — 다른 컨트롤러와 다름
+- `POST /external/api/todo-list/categorized` 엔드포인트는 코드에는 존재하나 api-spec.json에 미등재 — 스펙 보완 필요
 
 ### 신규 기능 추가
 - 새 API 엔드포인트 추가 → 해당 서비스의 `api-spec.json` 업데이트

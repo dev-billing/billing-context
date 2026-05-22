@@ -42,3 +42,12 @@
 | todo-service | 12개 | `/api/todo-list`, `/internal/api/todo-list`, `/external/api/todo-list` |
 | payment-service | 미확인 | - |
 | user-service | 미확인 | - |
+
+## CI/CD 자동화 현황
+
+| 서비스명 | API 문서 자동화 | AI Context 동기화 |
+|----------|----------------|-----------------|
+| todo-service | GitHub Actions (PR open/merge/close) → Dooray Wiki 발행 | GitHub Actions 스케줄 (매 시간, `0 * * * *`) |
+| movie-service | 미확인 | 미확인 |
+| payment-service | 미확인 | 미확인 |
+| user-service | 미확인 | 미확인 |

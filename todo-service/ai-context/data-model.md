@@ -47,6 +47,18 @@
 - DB 저장 방식: `EnumType.STRING` (값 그대로 문자열 저장)
 - 기본값: `TODO`
 
+### TodoCategory
+
+| 값 | 설명 |
+|----|------|
+| `PERSONAL` | 개인 일정 |
+| `WORK` | 업무 |
+| `STUDY` | 학습 |
+| `OTHER` | 기타 |
+
+- DB에 직접 저장되지 않음 (현재 `todos` 테이블 컬럼 없음)
+- `TodoCategorizedCreateRequest`를 통해 수신, 향후 service 레이어 확장 시 분류·집계에 활용 예정
+
 ## DTO 구조
 
 ### TodoCreateRequest
@@ -58,6 +70,19 @@
 | dueDate | LocalDate | 선택 | 마감일 (yyyy-MM-dd) |
 | priority | Integer | 선택 | 우선순위 (1~5 권장, 숫자가 높을수록 중요) |
 | tags | List\<String\> | 선택 | 태그 목록 (현재 미사용) |
+
+### TodoCategorizedCreateRequest
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| title | String | 사실상 필수 (엔티티 NOT NULL) | 제목 (최대 100자) |
+| content | String | 선택 | 상세 내용 |
+| dueDate | LocalDate | 선택 | 마감일 (yyyy-MM-dd) |
+| priority | Integer | 선택 | 우선순위 (1~5 권장, 숫자가 높을수록 중요) |
+| category | TodoCategory | 선택 | 카테고리 (PERSONAL/WORK/STUDY/OTHER) |
+
+- `POST /external/api/todo-list/categorized` 전용 요청 DTO
+- 현재 controller에서 category 값을 service에 전달하지 않음 (향후 확장 예정)
 
 ### TodoUpdateRequest
 
