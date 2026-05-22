@@ -14,6 +14,10 @@
         "type": "string",
         "enum": ["TODO", "IN_PROGRESS", "DONE"]
       },
+      "TodoCategory": {
+        "type": "string",
+        "enum": ["PERSONAL", "WORK", "STUDY", "OTHER"]
+      },
       "TodoCreateRequest": {
         "type": "object",
         "required": ["title"],
@@ -23,6 +27,17 @@
           "dueDate":  { "type": "string", "format": "date" },
           "priority": { "type": "integer", "minimum": 1, "maximum": 5, "description": "1~5 권장, 숫자가 높을수록 중요" },
           "tags":     { "type": "array", "items": { "type": "string" }, "description": "현재 미사용" }
+        }
+      },
+      "TodoCategorizedCreateRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title":    { "type": "string", "maxLength": 100 },
+          "content":  { "type": "string" },
+          "dueDate":  { "type": "string", "format": "date" },
+          "priority": { "type": "integer", "minimum": 1, "maximum": 5, "description": "1~5 권장, 숫자가 높을수록 중요" },
+          "category": { "$ref": "#/components/schemas/TodoCategory", "description": "PERSONAL/WORK/STUDY/OTHER" }
         }
       },
       "TodoUpdateRequest": {
@@ -174,7 +189,9 @@
         "tags": ["External API"],
         "summary": "Todo 단건 조회",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } },
+          { "name": "includeDeleted", "in": "query", "required": false, "schema": { "type": "boolean", "default": false }, "description": "true 면 soft delete 된 항목도 조회 (기본값: false, 현재 service 레이어 미반영)" },
+          { "name": "X-Caller-Id", "in": "header", "required": true, "schema": { "type": "string" }, "description": "호출 시스템 식별자 (감사 로그 추적용, 현재 service 레이어 미반영)" }
         ],
         "responses": {
           "200": { "description": "성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TodoResponse" } } } },
@@ -195,17 +212,6 @@
         },
         "responses": {
           "200": { "description": "수정 성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TodoResponse" } } } },
-          "404": { "description": "Todo 없음", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      },
-      "delete": {
-        "tags": ["External API"],
-        "summary": "Todo 삭제",
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } }
-        ],
-        "responses": {
-          "204": { "description": "삭제 성공" },
           "404": { "description": "Todo 없음", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
         }
       }
@@ -231,6 +237,34 @@
         "requestBody": {
           "required": true,
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TodoCreateRequest" } } }
+        },
+        "responses": {
+          "201": { "description": "생성 성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TodoResponse" } } } }
+        }
+      }
+    },
+    "/external/api/todo-list/find": {
+      "get": {
+        "tags": ["External API"],
+        "summary": "Todo 키워드 검색",
+        "description": "제목 또는 내용에 키워드가 포함된 Todo 목록을 반환합니다. 상태 필터를 함께 지정하면 해당 상태의 항목만 조회합니다.",
+        "parameters": [
+          { "name": "keyword", "in": "query", "required": true, "schema": { "type": "string" }, "description": "검색어 (대소문자 무시, 제목·내용 포함 검색)" },
+          { "name": "status", "in": "query", "required": false, "schema": { "$ref": "#/components/schemas/TodoStatus" }, "description": "필터링할 상태" }
+        ],
+        "responses": {
+          "200": { "description": "성공", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TodoResponse" } } } } }
+        }
+      }
+    },
+    "/external/api/todo-list/categorized": {
+      "post": {
+        "tags": ["External API"],
+        "summary": "카테고리 지정 Todo 생성",
+        "description": "카테고리(PERSONAL/WORK/STUDY/OTHER)를 함께 지정해 Todo를 생성합니다. 카테고리 정보는 별도 분류·집계에 활용됩니다.",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TodoCategorizedCreateRequest" } } }
         },
         "responses": {
           "201": { "description": "생성 성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TodoResponse" } } } }
