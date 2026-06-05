@@ -29,11 +29,10 @@
 
 ### AI Context 동기화 (GitHub Actions)
 - 워크플로우: `.github/workflows/sync-ai-context.yml`
-- 스케줄: 매 시간 자동 실행 (`0 * * * *`)
-- 수동 트리거(workflow_dispatch) 지원:
-  - `repo-name`: 특정 레포만 업데이트 (빈값이면 변경된 전체 레포)
-  - `force`: 변경 여부 무시하고 강제 전체 재생성 (boolean)
+- 트리거: `develop` 브랜치 `push` 시 자동 실행 (과거 매 시간 cron 스케줄에서 변경됨)
 - 실행 위임: `dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main` 호출
+- `repo-name`: `${{ github.event.repository.name }}` (현재 레포명 자동 전달)
+- `context-repo`: `billing-context`
 - `secrets: inherit`로 시크릿 전달
 
 ### Dooray Wiki
