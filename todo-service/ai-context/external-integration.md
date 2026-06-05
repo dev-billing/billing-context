@@ -25,7 +25,10 @@
 - PR close (미merge) → `reusable-generate-pr-drafts.yml` (mode: delete_draft) 호출하여 초안 삭제
 - 대상 브랜치: `develop`
 - 수동 초안 생성: `api-doc-create-draft.yml` (workflow_dispatch) — `api_key`(예: `GET /api/v1/todos`)와 `branch`(기본값: `develop`) 지정 → `reusable-create-draft-from-code.yml@main` 호출하여 특정 코드 기준 초안 생성
-- **환경별 URL 설정**: 서비스 레포에 별도 설정 파일 없음. Alpha/Real 환경 URL은 `dev-billing/shared-workflows`에서 중앙 관리
+- **환경별 URL 설정**: `docs/_meta.yml`에서 서비스 레포 내 직접 관리
+  - 기본 도메인: `alpha: https://alpha-todo.example.com`, `real: https://todo.example.com`
+  - `report` 패키지 별도 도메인: `alpha: https://alpha-report.example.com`, `real: https://report.example.com`
+  - `useGateway: false` — 게이트웨이 없이 직접 호출
 
 ### AI Context 동기화 (GitHub Actions)
 - 워크플로우: `.github/workflows/sync-ai-context.yml`

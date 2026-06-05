@@ -19,7 +19,8 @@ Master Agent는 업무 요청을 받으면 이 가이드를 먼저 읽고,
 | 예약, 예약 생성, 예약 취소, 예약 상태, 중복 예약 | movie-service | payment-service |
 | 결제, 환불, 결제 완료, 결제 실패, 결제 취소 | payment-service | movie-service |
 | 분산 락, 동시 예약, 경쟁 조건 | movie-service | - |
-| Todo, 할 일, 작업 목록, 작업 상태, IN_PROGRESS | todo-service | - |
+| Todo, 할 일, 작업 목록, 작업 상태, 우선순위, 마감일 | todo-service | - |
+| Todo 통계, 카테고리, 키워드 검색 | todo-service | - |
 | 사용자, 회원, 유저, 로그인 | user-service | movie-service (userId 외래 참조) |
 
 ## 업무 유형별 주의사항
@@ -39,20 +40,21 @@ Master Agent는 업무 요청을 받으면 이 가이드를 먼저 읽고,
 - 세 컨트롤러(TodoController, InternalTodoController, ExternalTodoController)가 동일 서비스를 공유하므로
   수정 시 세 경로(Public/Internal/External) 모두 영향 확인
 - `ExternalTodoController`의 PATCH는 `fields` 쿼리 파라미터로 부분 업데이트 지원 — 다른 컨트롤러와 다름
-- `POST /external/api/todo-list/categorized` 엔드포인트는 코드에는 존재하나 api-spec.json에 미등재 — 스펙 보완 필요
+- External API(`/external/api/todo-list/{id}`)는 `X-Caller-Id` 헤더 필수 — 호출 주체 식별용 (현재 service 레이어 미반영, 향후 감사 로그 확장 예정)
 
 ### 신규 기능 추가
 - 새 API 엔드포인트 추가 → 해당 서비스의 `api-spec.json` 업데이트
 - 새 Kafka 이벤트 추가 → `interface-contracts.json` 업데이트
-- DLQ 패턴: `<original-topic>.dlq` (movie-service 기준, ErrorHandler: `IllegalArgumentException`, `NullPointerException` → 재시도 없이 DLQ)
+- DLQ 패턴: `<original-topic>.dlq` (movie-service 기준, `IllegalArgumentException`, `NullPointerException` → 재시도 없이 DLQ)
 
 ### 데이터 모델 변경
 - `Reservation.userId` 변경 → user-service와 직접 HTTP 연동 없음. 외래 참조 의미 변경만 확인
 - Movie/Screen/Theater 스키마 변경 → movie-service 단독 영향
 - movie-service ddl-auto: `create` 주의 — 로컬 외 환경에서는 반드시 변경 필요
+- todo-service의 `TodoCategory`는 현재 DB 컬럼 없음 — `todos` 테이블 확장 시 마이그레이션 스크립트 필요
 
 ### 인프라/공통 변경
-- Redis 설정 변경 → movie-service의 Spring Cache + Redisson 분산 락 양쪽 영향 확인
+- Redis 설정 변경 → movie-service의 Spring Cache(Lettuce) + Redisson 분산 락 양쪽 영향 확인
 - Kafka broker 변경 → movie-service ↔ payment-service 이벤트 전체 영향
 
 ## 서비스별 진입 파일 경로

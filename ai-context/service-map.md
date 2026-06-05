@@ -8,7 +8,7 @@
 
 | 서비스명 | 한 줄 역할 | 기술 스택 | ai-context 경로 |
 |----------|-----------|-----------|----------------|
-| movie-service | 영화·상영관·좌석 관리 및 예약 처리 | Java 17, Spring Boot 3.5.9, MySQL, Redis, Kafka | `./movie-service/ai-context/` |
+| movie-service | 영화·상영관·좌석 관리 및 좌석 예약 처리 | Java 17, Spring Boot 3.5.9, MySQL, Redis, Kafka | `./movie-service/ai-context/` |
 | todo-service | Todo 항목 CRUD REST API (공개/내부/외부 3그룹) | Java 21, Spring Boot 4.0.3, MySQL | `./todo-service/ai-context/` |
 | payment-service | 결제 처리 ⚠️ ai-context 미생성 | 미확인 | `./payment-service/ai-context/` |
 | user-service | 사용자 관리 ⚠️ ai-context 미생성 | 미확인 | `./user-service/ai-context/` |
@@ -43,11 +43,20 @@
 | payment-service | 미확인 | - |
 | user-service | 미확인 | - |
 
+## 서비스별 ai-context 파일 목록
+
+| 서비스명 | 파일 |
+|----------|------|
+| movie-service | `domain-overview.md`, `api-spec.json`, `kafka-spec.json`, `external-integration.md`, `data-model.md` |
+| todo-service | `domain-overview.md`, `api-spec.json`, `external-integration.md`, `data-model.md` |
+| payment-service | (미생성) |
+| user-service | (미생성) |
+
 ## CI/CD 자동화 현황
 
 | 서비스명 | API 문서 자동화 | AI Context 동기화 |
 |----------|----------------|-----------------|
-| todo-service | GitHub Actions (PR open/merge/close) → Dooray Wiki 발행 | GitHub Actions 스케줄 (매 시간, `0 * * * *`) |
+| todo-service | GitHub Actions (PR open/merge/close) → Dooray Wiki 발행 | GitHub Actions (`develop` 브랜치 push 시 자동 실행) |
 | movie-service | 미확인 | 미확인 |
 | payment-service | 미확인 | 미확인 |
 | user-service | 미확인 | 미확인 |

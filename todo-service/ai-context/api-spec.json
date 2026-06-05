@@ -220,7 +220,7 @@
       "get": {
         "tags": ["External API"],
         "summary": "Todo 통계 조회",
-        "description": "status 및 minPriority 필터를 조합하여 total/done/pending 카운트 반환 (메모리 집계).",
+        "description": "status 및 minPriority 필터를 조합하여 total/done/pending 카운트 반환 (메모리 집계). 삭제된 항목은 집계에서 제외됩니다.",
         "parameters": [
           { "name": "status", "in": "query", "required": false, "schema": { "$ref": "#/components/schemas/TodoStatus" }, "description": "필터링할 상태" },
           { "name": "minPriority", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 5 }, "description": "최소 우선순위 (이상)" }
