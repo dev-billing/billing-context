@@ -261,7 +261,7 @@
       "post": {
         "tags": ["External API"],
         "summary": "카테고리 지정 Todo 생성",
-        "description": "카테고리(PERSONAL/WORK/STUDY/OTHER)를 함께 지정해 Todo를 생성합니다. 카테고리 정보는 별도 분류·집계에 활용됩니다.",
+        "description": "카테고리(PERSONAL/WORK/STUDY/OTHER)를 함께 지정해 Todo를 생성합니다. 현재 요청 필드(title/content/dueDate/priority/category) 모두 service 레이어에 미전달 (향후 service 레이어 확장 시 활용 예정).",
         "requestBody": {
           "required": true,
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TodoCategorizedCreateRequest" } } }
