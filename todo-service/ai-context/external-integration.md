@@ -18,29 +18,10 @@
 
 ## CI/CD 연동
 
-### API 문서 자동화 (GitHub Actions)
-- 워크플로우: `.github/workflows/api-doc-pr.yml`, `.github/workflows/api-doc-create-draft.yml`, `.github/workflows/api-doc-publish.yml`
-- PR open/reopen → `dev-billing/shared-workflows`의 `reusable-generate-pr-drafts.yml` (mode: draft) 호출하여 변경 API 문서 초안 생성
-- PR merge → `reusable-generate-pr-drafts.yml` (mode: all) 호출하여 최종 코드 기준 초안 최신화 + 발행 + deprecated 처리
-- PR close (미merge) → `reusable-generate-pr-drafts.yml` (mode: delete_draft) 호출하여 초안 삭제
-- 대상 브랜치: `develop`
-- 수동 초안 생성: `api-doc-create-draft.yml` (workflow_dispatch) — `api_key`(예: `GET /api/v1/todos`)와 `branch`(기본값: `develop`) 지정 → `reusable-create-draft-from-code.yml@main` 호출하여 특정 코드 기준 초안 생성
-- **환경별 URL 설정**: `docs/_meta.yml`에서 서비스 레포 내 직접 관리
-  - 기본 도메인: `alpha: https://alpha-todo.example.com`, `real: https://todo.example.com`
-  - `report` 패키지 별도 도메인: `alpha: https://alpha-report.example.com`, `real: https://report.example.com`
-  - `useGateway: false` — 게이트웨이 없이 직접 호출
-
 ### AI Context 동기화 (GitHub Actions)
 - 워크플로우: `.github/workflows/sync-ai-context.yml`
-- 트리거: `develop` 브랜치 `push` 시 자동 실행 (과거 매 시간 cron 스케줄에서 변경됨)
+- 트리거: `develop` 브랜치 `push` 시 자동 실행
 - 실행 위임: `dev-billing/shared-workflows/.github/workflows/sync-ai-context.yml@main` 호출
 - `repo-name`: `${{ github.event.repository.name }}` (현재 레포명 자동 전달)
 - `context-repo`: `billing-context`
 - `secrets: inherit`로 시크릿 전달
-
-### Dooray Wiki
-- 용도: REST API 문서 자동 발행
-- API 문서 레지스트리: `.shared-config/rest-api-docs/todo-service/api-docs-registry.json`
-- 환경 변수: `DOORAY_API_KEY`, `DOORAY_WIKI_ID`, `DOORAY_PROJECT_ID`, `DOORAY_DRAFT_PARENT_PAGE_ID`, `DOORAY_EXTERNAL_PARENT_PAGE_ID`, `DOORAY_INTERNAL_PARENT_PAGE_ID`, `DOORAY_DEFAULT_PARENT_PAGE_ID`
-- 발행 대상: external/internal/default URL 분류 기준으로 Wiki 페이지 구성
-- 수동 발행: `api-doc-publish.yml` (workflow_dispatch) — `api_key`와 `branch` 지정

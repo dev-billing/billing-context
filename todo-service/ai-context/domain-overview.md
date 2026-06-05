@@ -24,15 +24,12 @@ Todo 항목의 생성·조회·수정·삭제 및 통계를 제공하는 단일 
 - **읽기 전용 트랜잭션 최적화**: `@Transactional(readOnly = true)` 기본, 변경 연산만 `@Transactional`
 - **글로벌 예외 핸들러**: `@RestControllerAdvice`로 일관된 에러 응답
 - **선택적 필드 업데이트**: `fields` 파라미터 기반 PATCH 지원 (ExternalTodoController)
-- **API 문서 자동화 어노테이션**: `@ApiDocs(title)` 어노테이션으로 문서화 대상 메서드 표시. `title` 있으면 `docs/{slugify(title)}.md`, 없으면 `docs/{method}-{slugify(url)}.md` 파일과 매핑. `@Retention(SOURCE)`라 런타임 영향 없음
 
 ## 패키지 구조
 
 ```
 com.example.review
 ├── ReviewApplication.java          # 진입점
-├── apidoc/
-│   └── ApiDocs.java                # API 문서화 대상 메서드 표시 어노테이션
 ├── controller/
 │   ├── TodoController.java         # /api/todo-list — 공개 API
 │   ├── InternalTodoController.java # /internal/api/todo-list — 내부 API
