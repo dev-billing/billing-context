@@ -2,7 +2,7 @@
 
 > 각 서비스의 상세 정보는 해당 ai-context 디렉토리를 직접 참조할 것.
 > 이 파일은 전체 조망용 요약이다.
-> **이 목록은 `ai-context/` 디렉토리가 존재하는 서비스만 포함한다.**
+> **이 목록은 `ai-context/` 디렉토리에 실제 컨텍스트가 있는 서비스만 포함한다.**
 
 ## 서비스 목록
 
@@ -10,11 +10,9 @@
 |----------|-----------|-----------|----------------|
 | movie-service | 영화·상영관·좌석 관리 및 좌석 예약 처리 | Java 17, Spring Boot 3.5.9, MySQL, Redis, Kafka | `./movie-service/ai-context/` |
 | todo-service | Todo 항목 CRUD REST API (공개/내부/외부 3그룹) | Java 21, Spring Boot 4.0.3, MySQL | `./todo-service/ai-context/` |
-| payment-service | 결제 처리 ⚠️ ai-context 미생성 | 미확인 | `./payment-service/ai-context/` |
-| user-service | 사용자 관리 ⚠️ ai-context 미생성 | 미확인 | `./user-service/ai-context/` |
 
-> ⚠️ payment-service, user-service는 `ai-context/` 디렉토리만 존재하며 내용이 생성되지 않았습니다.
-> 해당 서비스에서 `/generate-ai-context`를 먼저 실행해주세요.
+> ⚠️ **payment-service**, **user-service**는 `ai-context/`가 비어 있어 루트 컨텍스트 분석 범위에서 제외됩니다.
+> 등록하려면 해당 서비스에서 `/generate-ai-context`를 먼저 실행하세요.
 
 ## 서비스별 핵심 도메인 엔티티
 
@@ -22,8 +20,6 @@
 |----------|------------|
 | movie-service | Movie, Theater, TheaterSeat, TheaterSeatGrade, Screen, Reservation, ReservationSeat |
 | todo-service | Todo |
-| payment-service | 미확인 (ai-context 없음) |
-| user-service | 미확인 (ai-context 없음) |
 
 ## 서비스별 기술 스택 요약
 
@@ -31,17 +27,13 @@
 |----------|-----|--------------|-----------|
 | movie-service | MySQL 8.x | Kafka | Redis (Spring Cache + Redisson 분산 락) |
 | todo-service | MySQL 8.x | - | - |
-| payment-service | 미확인 | Kafka (추정) | 미확인 |
-| user-service | 미확인 | 미확인 | 미확인 |
 
 ## API 엔드포인트 요약
 
 | 서비스명 | 엔드포인트 수 | 주요 경로 |
 |----------|------------|----------|
 | movie-service | 2개 | `POST /api/reservations`, `PATCH /api/reservations/{id}` |
-| todo-service | 12개 | `/api/todo-list`, `/internal/api/todo-list`, `/external/api/todo-list` |
-| payment-service | 미확인 | - |
-| user-service | 미확인 | - |
+| todo-service | 16개 | `/api/todo-list`, `/internal/api/todo-list`, `/external/api/todo-list`, `/api/reports/todos` |
 
 ## 서비스별 ai-context 파일 목록
 
@@ -49,8 +41,6 @@
 |----------|------|
 | movie-service | `domain-overview.md`, `api-spec.json`, `kafka-spec.json`, `external-integration.md`, `data-model.md` |
 | todo-service | `domain-overview.md`, `api-spec.json`, `external-integration.md`, `data-model.md` |
-| payment-service | (미생성) |
-| user-service | (미생성) |
 
 ## CI/CD 자동화 현황
 
@@ -58,5 +48,3 @@
 |----------|----------------|-----------------|
 | todo-service | GitHub Actions (PR open/merge/close) → Dooray Wiki 발행 | GitHub Actions (`develop` 브랜치 push 시 자동 실행) |
 | movie-service | 미확인 | 미확인 |
-| payment-service | 미확인 | 미확인 |
-| user-service | 미확인 | 미확인 |

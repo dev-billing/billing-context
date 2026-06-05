@@ -3,7 +3,7 @@
   "info": {
     "title": "Todo Service API",
     "version": "0.0.1-SNAPSHOT",
-    "description": "Todo 항목 관리 REST API. 공개(/api), 내부(/internal/api), 외부(/external/api), 리포트(/api/reports) 네 그룹으로 구성."
+    "description": "Todo 항목 관리 REST API. 내부(/api, /internal/api), 외부(/external/api), 리포트(/api/reports) 세 스코프로 구성."
   },
   "servers": [
     { "url": "http://localhost:8080" }
@@ -93,7 +93,7 @@
   "paths": {
     "/api/todo-list/{id}": {
       "get": {
-        "tags": ["Public API"],
+        "tags": ["Internal API"],
         "summary": "Todo 단건 조회",
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } }
@@ -104,7 +104,7 @@
         }
       },
       "put": {
-        "tags": ["Public API"],
+        "tags": ["Internal API"],
         "summary": "Todo 전체 수정",
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } }
@@ -121,7 +121,7 @@
     },
     "/api/todo-list": {
       "post": {
-        "tags": ["Public API"],
+        "tags": ["Internal API"],
         "summary": "Todo 생성",
         "requestBody": {
           "required": true,

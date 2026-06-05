@@ -17,11 +17,14 @@ Master Agent는 업무 요청을 받으면 이 가이드를 먼저 읽고,
 | 영화, 영화 목록, 개봉일, 연령등급 | movie-service | - |
 | 상영관, 상영 일정, 좌석, 좌석 등급, 좌석 가격 | movie-service | - |
 | 예약, 예약 생성, 예약 취소, 예약 상태, 중복 예약 | movie-service | payment-service |
-| 결제, 환불, 결제 완료, 결제 실패, 결제 취소 | payment-service | movie-service |
+| 결제, 환불, 결제 완료, 결제 실패, 결제 취소 | payment-service* | movie-service |
 | 분산 락, 동시 예약, 경쟁 조건 | movie-service | - |
 | Todo, 할 일, 작업 목록, 작업 상태, 우선순위, 마감일 | todo-service | - |
 | Todo 통계, 카테고리, 키워드 검색 | todo-service | - |
-| 사용자, 회원, 유저, 로그인 | user-service | movie-service (userId 외래 참조) |
+| 일일 리포트, 우선순위 분포 | todo-service | - |
+| 사용자, 회원, 유저, 로그인 | user-service* | movie-service (userId 외래 참조) |
+
+\* ai-context 미생성 — 실제 코드 직접 확인 필요
 
 ## 업무 유형별 주의사항
 
@@ -29,6 +32,7 @@ Master Agent는 업무 요청을 받으면 이 가이드를 먼저 읽고,
 - 예약 생성/취소 로직 수정 시 Kafka 이벤트(`reservation-created`, `reservation-cancelled`) 스펙 변경 가능
 - payment-service consumer와 정합성 필수 확인 (payment-service ai-context 생성 후)
 - 분산 락 키 패턴(`lock:screenId:{id}:seatId:{id}`) 변경 시 동시성 제어 전체 검토
+- 예약 상태 전환: PENDING → CONFIRMED → CANCELLING → CANCELLED / PENDING → CREATED_FAIL
 
 ### 결제 이벤트 연동 변경
 - `payment-completed`, `payment-cancelled`, `payment-created-fail` 이벤트 스펙 변경 시
@@ -37,10 +41,11 @@ Master Agent는 업무 요청을 받으면 이 가이드를 먼저 읽고,
 
 ### Todo 기능 변경
 - todo-service는 standalone — 타 서비스 영향 없음
-- 세 컨트롤러(TodoController, InternalTodoController, ExternalTodoController)가 동일 서비스를 공유하므로
+- 세 컨트롤러(TodoController, InternalTodoController, ExternalTodoController)가 동일 서비스를 공유
   수정 시 세 경로(Public/Internal/External) 모두 영향 확인
 - `ExternalTodoController`의 PATCH는 `fields` 쿼리 파라미터로 부분 업데이트 지원 — 다른 컨트롤러와 다름
-- External API(`/external/api/todo-list/{id}`)는 `X-Caller-Id` 헤더 필수 — 호출 주체 식별용 (현재 service 레이어 미반영, 향후 감사 로그 확장 예정)
+- External API(`/external/api/todo-list/{id}`)는 `X-Caller-Id` 헤더 필수 (현재 service 레이어 미반영, 향후 감사 로그 확장 예정)
+- `/api/reports/todos` 경로는 별도 도메인(`report.example.com`) 사용 — TodoReportController
 
 ### 신규 기능 추가
 - 새 API 엔드포인트 추가 → 해당 서비스의 `api-spec.json` 업데이트
