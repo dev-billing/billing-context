@@ -3,7 +3,7 @@
   "info": {
     "title": "Todo Service API",
     "version": "0.0.1-SNAPSHOT",
-    "description": "Todo 항목 관리 REST API. 공개(/api), 내부(/internal/api), 외부(/external/api) 세 그룹으로 구성."
+    "description": "Todo 항목 관리 REST API. 공개(/api), 내부(/internal/api), 외부(/external/api), 리포트(/api/reports) 네 그룹으로 구성."
   },
   "servers": [
     { "url": "http://localhost:8080" }
@@ -70,6 +70,17 @@
           "done":    { "type": "integer", "format": "int64" },
           "pending": { "type": "integer", "format": "int64" }
         }
+      },
+      "DailyReportResponse": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "format": "int64", "description": "해당 상태의 Todo 전체 건수" }
+        }
+      },
+      "PriorityDistributionResponse": {
+        "type": "object",
+        "description": "key: 우선순위(Integer), value: 해당 우선순위의 Todo 건수. priority가 null인 항목은 제외.",
+        "additionalProperties": { "type": "integer", "format": "int64" }
       },
       "ErrorResponse": {
         "type": "object",
@@ -268,6 +279,30 @@
         },
         "responses": {
           "201": { "description": "생성 성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TodoResponse" } } } }
+        }
+      }
+    },
+    "/api/reports/todos/daily": {
+      "get": {
+        "tags": ["Report API"],
+        "summary": "Todo 일일 리포트",
+        "description": "특정 상태의 Todo 건수를 집계한 리포트. 리포팅 도메인(report.example.com) 사용.",
+        "parameters": [
+          { "name": "status", "in": "query", "required": true, "schema": { "$ref": "#/components/schemas/TodoStatus" }, "description": "집계할 상태값 (TODO / IN_PROGRESS / DONE)" }
+        ],
+        "responses": {
+          "200": { "description": "성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DailyReportResponse" } } } },
+          "400": { "description": "status 누락 또는 잘못된 값" }
+        }
+      }
+    },
+    "/api/reports/todos/priority-distribution": {
+      "get": {
+        "tags": ["Report API"],
+        "summary": "Todo 우선순위 분포 리포트",
+        "description": "전체 Todo의 우선순위별 분포 반환. priority가 null인 항목은 제외. 리포팅 도메인(report.example.com) 사용.",
+        "responses": {
+          "200": { "description": "성공", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PriorityDistributionResponse" } } } }
         }
       }
     }

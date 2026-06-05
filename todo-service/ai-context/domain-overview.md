@@ -37,6 +37,9 @@ com.example.review
 │   ├── TodoController.java         # /api/todo-list — 공개 API
 │   ├── InternalTodoController.java # /internal/api/todo-list — 내부 API
 │   └── ExternalTodoController.java # /external/api/todo-list — 외부 API + 통계
+├── report/
+│   └── controller/
+│       └── TodoReportController.java  # /api/reports/todos — 리포트 API (별도 도메인)
 ├── service/
 │   └── TodoService.java            # 비즈니스 로직
 ├── repository/
@@ -66,3 +69,5 @@ com.example.review
 7. **카테고리 분류**: `POST /external/api/todo-list/categorized`로 생성 시 `TodoCategory`(PERSONAL/WORK/STUDY/OTHER) 지정 가능. 현재 category 필드는 요청 수신 후 service 레이어에서 미활용(향후 확장 예정)
 8. **키워드 검색**: `GET /external/api/todo-list/find?keyword=...&status=...` — 제목·내용 대소문자 무시 포함 검색. `status` 필터와 조합 가능하며 메모리 내 스트림 필터링으로 처리
 9. **외부 API 감사 파라미터**: `GET /external/api/todo-list/{id}` 요청 시 `X-Caller-Id` 헤더(필수)와 `includeDeleted` 쿼리 파라미터를 수신하나 현재 service 레이어에는 미전달 (향후 감사 로그·soft delete 확장 예정)
+10. **일일 리포트**: `GET /api/reports/todos/daily?status=...` — 특정 상태의 Todo 건수를 집계해 `{"total": N}` 형태로 반환. `report` 패키지에 속하며 별도 도메인(`report.example.com`) 사용
+11. **우선순위 분포 리포트**: `GET /api/reports/todos/priority-distribution` — 전체 Todo의 우선순위별 건수를 `Map<Integer, Long>` 형태로 반환. `priority` null 항목은 집계 제외. 별도 도메인(`report.example.com`) 사용
