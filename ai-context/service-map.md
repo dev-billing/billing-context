@@ -33,7 +33,7 @@
 | 서비스명 | 엔드포인트 수 | 주요 경로 |
 |----------|------------|----------|
 | movie-service | 2개 | `POST /api/reservations`, `PATCH /api/reservations/{id}` |
-| todo-service | 16개 | `/api/todo-list`, `/internal/api/todo-list`, `/external/api/todo-list`, `/api/reports/todos` |
+| todo-service | 10개+ | `/api/todo-list`, `/internal/api/todo-list`, `/external/api/todo-list`, `/api/reports/todos` |
 
 ## 서비스별 ai-context 파일 목록
 
@@ -42,9 +42,16 @@
 | movie-service | `domain-overview.md`, `api-spec.json`, `kafka-spec.json`, `external-integration.md`, `data-model.md` |
 | todo-service | `domain-overview.md`, `api-spec.json`, `external-integration.md`, `data-model.md` |
 
+## 배포 URL 현황
+
+| 서비스명 | Alpha | Real |
+|----------|-------|------|
+| todo-service | https://alpha-todo-service.com | https://todo-service.com |
+| movie-service | 미확인 | 미확인 |
+
 ## CI/CD 자동화 현황
 
-| 서비스명 | API 문서 자동화 | AI Context 동기화 |
-|----------|----------------|-----------------|
-| todo-service | GitHub Actions (PR open/merge/close) → Dooray Wiki 발행 | GitHub Actions (`develop` 브랜치 push 시 자동 실행) |
-| movie-service | 미확인 | 미확인 |
+| 서비스명 | AI Context 동기화 |
+|----------|-----------------|
+| todo-service | GitHub Actions (`develop` 브랜치 push 시 자동 실행 → `billing-context` 레포 동기화) |
+| movie-service | 미확인 |

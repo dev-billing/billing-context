@@ -6,7 +6,9 @@
     "description": "Todo 항목 관리 REST API. 내부(/api, /internal/api), 외부(/external/api), 리포트(/api/reports) 세 스코프로 구성."
   },
   "servers": [
-    { "url": "http://localhost:8080" }
+    { "url": "https://todo-service.com", "description": "Real" },
+    { "url": "https://alpha-todo-service.com", "description": "Alpha" },
+    { "url": "http://localhost:8080", "description": "Local" }
   ],
   "components": {
     "schemas": {

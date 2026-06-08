@@ -1,5 +1,14 @@
 # 외부 연동
 
+## 배포 환경
+
+| 환경 | URL |
+|------|-----|
+| Alpha | https://alpha-todo-service.com |
+| Real | https://todo-service.com |
+
+- API Gateway 미사용 (`useGateway: false`)
+
 ## 내부 서비스 호출 (FeignClient)
 
 없음
