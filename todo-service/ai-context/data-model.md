@@ -82,7 +82,7 @@
 | category | TodoCategory | 선택 | 카테고리 (PERSONAL/WORK/STUDY/OTHER) |
 
 - `POST /external/api/todo-list/categorized` 전용 요청 DTO
-- 현재 controller에서 category 값을 service에 전달하지 않음 (향후 확장 예정)
+- 현재 controller에서 요청 필드(title/content/dueDate/priority/category) 모두 service에 미전달 (향후 확장 예정)
 
 ### TodoUpdateRequest
 

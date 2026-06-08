@@ -63,7 +63,7 @@ com.example.review
 4. **통계 집계**: `total`, `done`, `pending(= total - done)` 카운트를 `status`, `minPriority` 필터 조합으로 계산 (DB가 아닌 메모리 내 집계). 삭제된 항목은 집계에서 제외됩니다.
 5. **존재하지 않는 Todo 접근**: `IllegalArgumentException` → GlobalExceptionHandler가 HTTP 404로 변환
 6. **스키마 관리**: `ddl-auto: update` — 엔티티 변경 시 자동 DDL 반영 (프로덕션 배포 시 주의 필요)
-7. **카테고리 분류**: `POST /external/api/todo-list/categorized`로 생성 시 `TodoCategory`(PERSONAL/WORK/STUDY/OTHER) 지정 가능. 현재 category 필드는 요청 수신 후 service 레이어에서 미활용(향후 확장 예정)
+7. **카테고리 분류**: `POST /external/api/todo-list/categorized`로 생성 시 `TodoCategory`(PERSONAL/WORK/STUDY/OTHER) 지정 가능. 현재 요청 필드(title/content/dueDate/priority/category) 모두 service 레이어에 미전달(향후 확장 예정)
 8. **키워드 검색**: `GET /external/api/todo-list/find?keyword=...&status=...` — 제목·내용 대소문자 무시 포함 검색. `status` 필터와 조합 가능하며 메모리 내 스트림 필터링으로 처리
 9. **외부 API 감사 파라미터**: `GET /external/api/todo-list/{id}` 요청 시 `X-Caller-Id` 헤더(필수)와 `includeDeleted` 쿼리 파라미터를 수신하나 현재 service 레이어에는 미전달 (향후 감사 로그·soft delete 확장 예정)
 10. **일일 리포트**: `GET /api/reports/todos/daily?status=...` — 특정 상태의 Todo 건수를 집계해 `{"total": N}` 형태로 반환. `report` 패키지에 속하며 별도 도메인(`report.example.com`) 사용
