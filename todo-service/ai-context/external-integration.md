@@ -7,7 +7,7 @@
 | Alpha | https://alpha-todo-service.com |
 | Real | https://todo-service.com |
 
-- API Gateway 미사용 (`useGateway: false`)
+- API Gateway 미사용
 
 ## 내부 서비스 호출 (FeignClient)
 
